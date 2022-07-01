@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:simple_weather/services/location.dart';
-
-const apiKey = '7387055727a31f77a067380e1dba9fe1';
 
 class LoadingScreen extends StatefulWidget {
   const LoadingScreen({Key? key}) : super(key: key);
@@ -11,26 +10,30 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
-  double? latitude;
-  double? longitude;
-
   @override
   void initState() {
     super.initState();
-    getLocationData();
+    getLocation();
+    getData();
   }
 
-  void getLocationData() async {
-    Location location = Location();
-    await location.getCurrentLocation();
-    longitude = Location().longitude;
-    latitude = Location().latitude;
+  void getLocation() async {
+    try {
+      Location location = Location();
+      await location.getCurrentLocation();
+      print(Location().longitude);
+      print(Location().latitude);
+    } catch (e, s) {
+      print(s);
+    }
+  }
 
-    //NetworkHelper networkHelper = NetworkHelper(
-    //   url:
-    //        'https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&appid=$apiKey');
+  final url =
+      'https://samples.openweathermap.org/data/2.5/forecast?q=M%C3%BCnchen,DE&appid=439d4b804bc8187953eb36d2a8c26a02';
+  void getData() async {
+    Response response = await get(Uri.parse(url));
 
-    //  var weatherData = await networkHelper.getData();
+    print(response.body);
   }
 
   @override
@@ -45,11 +48,9 @@ class _LoadingScreenState extends State<LoadingScreen> {
     }
 
     return Scaffold(
-      body: Center(
-        child: Container(
-          color: Colors.red,
-          margin: EdgeInsets.all(doubleMargin),
-        ),
+      body: Container(
+        color: Colors.red,
+        margin: EdgeInsets.all(doubleMargin),
       ),
     );
   }
